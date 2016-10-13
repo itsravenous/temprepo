@@ -4,11 +4,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var sassMiddleware = require('node-sass-middleware');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+var loggedout = require('./routes/loggedout');
+var loggedin = require('./routes/loggedin');
+var api = require('./routes/api');
 
 var app = express();
+
+//compile sass
+app.use(sassMiddleware({
+    src: path.join(__dirname, 'public'),
+    dest: path.join(__dirname, 'public'),
+    debug: false,
+    outputStyle: 'compressed'
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,8 +32,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+app.use('/', loggedout);
+app.use('/books', loggedin);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
